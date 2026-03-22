@@ -28,6 +28,13 @@ workspace:WaitForChild("RuntimeEnemies"):Destroy()
 workspace:WaitForChild("SafeZones"):Destroy()
 workspace.StreamingEnabled = false
 
+local function UpdateCFG(data)
+	if not data then return end
+	
+	dataCFG = data
+	return writefile(dataName, HttpService:JSONEncode(data))
+end
+
 local function FindClosestObject(a, b) -- object, object | character.hrp, objectModels.crate
 	if not a or not b then return false end
 
@@ -77,6 +84,7 @@ local function Rejoin()
 	while true do
 		pcall(function()
 			dataCFG["isFarm"] = false
+			UpdateCFG(dataCFG)
 			local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
 			task.wait(10)
 		end)
