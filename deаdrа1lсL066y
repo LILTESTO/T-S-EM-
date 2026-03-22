@@ -11,6 +11,13 @@ local remote = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe")
 local menu = localPlayer.PlayerGui:WaitForChild("PartyCreation"):WaitForChild("Frame")
 local isFound = false
 
+local function UpdateCFG(data)
+	if not data then return end
+	
+	dataCFG = data
+	return writefile(dataName, HttpService:JSONEncode(data))
+end
+
 menu:GetPropertyChangedSignal("Position"):Connect(function()
 	isFound = true
 
@@ -24,6 +31,7 @@ menu:GetPropertyChangedSignal("Position"):Connect(function()
 	}
 	remote:FireServer(unpack(args))
 	dataCFG["isFarm"] = true
+	updateCFG[dataCFG]
 end)
 
 local function Scan()
