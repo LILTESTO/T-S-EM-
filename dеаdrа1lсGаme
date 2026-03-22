@@ -224,7 +224,7 @@ function Farming()
 					if curFarmZone.Name == "VampireCastle" then
 						local mainFloor = workspace:FindFirstChild("VampireCastle").House.MainFloor.CFrame
 						hrp.CFrame = CFrame.new(mainFloor.Position.X, sY, mainFloor.Position.Z)
-						task.wait(2)
+						task.wait(3)
 						GetBonds()
 						task.wait(2)
 						Rejoin()
