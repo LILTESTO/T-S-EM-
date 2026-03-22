@@ -1,0 +1,33 @@
+local placeIds = {
+	[116495829188952] = "Lobby", -- Lobby
+	[70876832253163] = "Game" -- inGame
+	
+}
+
+local Currentgame = placeIds[game.PlaceId] or nil
+print(`[DeadRails]: Placeid: {game.PlaceId}\nCurrent: {Currentgame}`)
+if not Currentgame then warn("[DeadRails]: GAME NOT SUPPORTED!") return end
+---------------------------------------------------------------------------
+local dataName = "DeadRailsCFG.json"
+
+if isfile(dataName) then
+	getgenv().dataCFG = HttpService:JSONDecode(readfile(dataName))
+else
+	getgenv().dataCFG = {
+		Toggle = false,
+	}
+end
+
+-- Проверка на смену профиля и вышел ли игрок во время игры
+if dataCFG["Toggle"] and Currentgame == "Lobby" then
+	print(`[DeadRails]: Script is stopped!`)
+	dataCFG["Toggle"] = false
+end
+----------------------------------------------------------------------------
+repeat task.wait(0.3) until dataCFG["Toggle"]
+----------------------------------------------------------------------------
+if Currentgame = "Lobby" then
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/de%D0%B0dr%D0%B01l%D1%81L066y"))()
+elseif Currentgame = "Game" then
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/d%D0%B5%D0%B0dr%D0%B01l%D1%81G%D0%B0me"))()
+end
