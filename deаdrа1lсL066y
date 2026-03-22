@@ -1,3 +1,5 @@
+local HttpService = game:GetService("HttpService")
+
 local replicatedStorage = game:GetService("ReplicatedStorage")
 
 local players = game:GetService("Players")
