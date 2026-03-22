@@ -76,6 +76,7 @@ end
 local function Rejoin()
 	while true do
 		pcall(function()
+			dataCFG["Toggle"] = false
 			local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
 			task.wait(10)
 		end)
