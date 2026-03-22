@@ -76,7 +76,7 @@ end
 local function Rejoin()
 	while true do
 		pcall(function()
-			dataCFG["Toggle"] = false
+			dataCFG["isFarm"] = false
 			local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
 			task.wait(10)
 		end)
@@ -230,11 +230,11 @@ function Farming()
 						Rejoin()
 
 					elseif curFarmZone.Name == "FortConstitution" then
-						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + 20, sY, curFarmZone.WorldPivot.Position.Z)
+						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + 60, sY, curFarmZone.WorldPivot.Position.Z)
 						task.wait(2)
 						GetBonds()
 						-- Колхоз
-						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + -20, sY, curFarmZone.WorldPivot.Position.Z)
+						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + -60, sY, curFarmZone.WorldPivot.Position.Z)
 						task.wait(2)
 						GetBonds()
 					end
