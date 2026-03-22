@@ -23,6 +23,7 @@ menu:GetPropertyChangedSignal("Position"):Connect(function()
   	  }
 	}
 	remote:FireServer(unpack(args))
+	dataCFG["Toggle"] = true
 end)
 
 local function Scan()
