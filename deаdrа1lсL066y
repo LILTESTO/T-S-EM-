@@ -1,0 +1,43 @@
+local replicatedStorage = game:GetService("ReplicatedStorage")
+
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local partyZones = workspace:WaitForChild("PartyZones")
+local remote = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe"):WaitForChild("Network"):WaitForChild("RemoteEvent"):WaitForChild("CreateParty")
+
+local menu = localPlayer.PlayerGui:WaitForChild("PartyCreation"):WaitForChild("Frame")
+local isFound = false
+
+menu:GetPropertyChangedSignal("Position"):Connect(function()
+	isFound = true
+
+	local args = {
+	    [1] = {
+ 	       ["isPrivate"] = true,
+ 	       ["maxMembers"] = 1,
+   	     ["trainId"] = "default",
+   	     ["gameMode"] = "BiteSized"
+  	  }
+	}
+	remote:FireServer(unpack(args))
+end)
+
+local function Scan()
+	for index, lobby in pairs(partyZones:GetChildren()) do
+		if isFound then break end
+
+		local status = lobby.BillboardGui.StatusLabel
+		
+		if status.Text == "Waiting for players..." then
+			hrp.CFrame = lobby.Hitbox.CFrame
+			
+		end
+		task.wait(0.5)
+		Scan()
+	end
+	
+end
+Scan()
