@@ -241,11 +241,11 @@ function Farming()
 						Rejoin()
 
 					elseif curFarmZone.Name == "FortConstitution" then
-						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + 60, sY, curFarmZone.WorldPivot.Position.Z)
+						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + 120, sY, curFarmZone.WorldPivot.Position.Z)
 						task.wait(2)
 						GetBonds()
 						-- Колхоз
-						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + -60, sY, curFarmZone.WorldPivot.Position.Z)
+						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + -120, sY, curFarmZone.WorldPivot.Position.Z)
 						task.wait(2)
 						GetBonds()
 					end
