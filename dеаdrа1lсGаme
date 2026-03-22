@@ -29,6 +29,7 @@ workspace:WaitForChild("RuntimeEnemies"):Destroy()
 workspace:WaitForChild("SafeZones"):Destroy()
 workspace.StreamingEnabled = false
 
+local dataName = "DeadRailsCFG.json"
 local function UpdateCFG(data)
 	if not data then return end
 	
