@@ -82,10 +82,11 @@ local function GetBonds()
 end
 
 local function Rejoin()
+	dataCFG["isFarm"] = false
+	UpdateCFG(dataCFG)
+
 	while true do
 		pcall(function()
-			dataCFG["isFarm"] = false
-			UpdateCFG(dataCFG)
 			local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
 			task.wait(10)
 		end)
