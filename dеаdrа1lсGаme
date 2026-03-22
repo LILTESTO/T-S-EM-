@@ -1,0 +1,257 @@
+local TeleportService = game:GetService("TeleportService")
+
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local remotes = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe"):WaitForChild("Network"):WaitForChild("RemoteEvent")
+local actionable = remotes:WaitForChild("Actionable")
+local store = remotes:WaitForChild("Store")
+
+local objectModels = workspace:WaitForChild("ObjectModels")
+local runtimeEntities = workspace:WaitForChild("RuntimeEntities")
+local rails = workspace:WaitForChild("RailSegments")
+local towns = workspace:WaitForChild("Towns")
+
+local timer = 0
+
+game:GetService("CoreGui").RobloxGui["CoreScripts/NetworkPause"]:Destroy()
+workspace:WaitForChild("Decor"):Destroy()
+workspace:WaitForChild("RuntimePuddles"):Destroy()
+workspace:WaitForChild("Ore"):Destroy()
+workspace:WaitForChild("RandomBuildings"):Destroy()
+workspace:WaitForChild("Baseplates"):Destroy()
+workspace:WaitForChild("RuntimeEnemies"):Destroy()
+workspace:WaitForChild("SafeZones"):Destroy()
+workspace.StreamingEnabled = false
+
+local function FindClosestObject(a, b) -- object, object | character.hrp, objectModels.crate
+	if not a or not b then return false end
+
+	local lastResult = nil
+	local closestObject = nil
+	for index, object in pairs(b.Parent:GetChildren()) do
+		if object.Name == b.Name then
+			local posA = a.Position
+			local posB = object.PrimaryPart.Position
+			local result = (posA - posB).Magnitude
+
+			if not lastResult or lastResult > result then
+				lastResult = result
+				closestObject = object
+			end
+		end
+	end
+	
+	if closestObject then return closestObject end
+	return false
+end
+
+local lastResult
+local function FindRailCFrame()
+	local result
+	for _, rail in pairs(rails:GetChildren()) do
+		if rail.PrimaryPart then
+			result = rail.PrimaryPart.CFrame
+		end
+	end
+
+	for _, rail in pairs(rails:GetChildren()) do
+		rail:Destroy()
+	end
+	return result
+end
+
+local function GetBonds()
+	for _, bond in pairs(objectModels:GetChildren()) do
+		if bond.Name == "bond" then
+			actionable:FireServer(bond:GetAttribute("entity_server"))
+		end
+	end
+end
+
+local function Rejoin()
+	while true do
+		pcall(function()
+			local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
+			task.wait(10)
+		end)
+	end
+	
+end
+
+local trueTimer
+local function Timeout()
+	spawn(function()
+		while task.wait(1) do
+			trueTimer += 1
+			if trueTimer == 90 then 
+				Rejoin()
+			end
+		end
+	end)
+end
+
+local function StartTimer()
+	spawn(function()
+		while task.wait(1) do
+			timer += 1
+		end
+	end)
+end
+
+local queueFarm = {}
+local curFarmZone = nil
+local function AutoQueue()
+	spawn(function()
+		while task.wait(0.1) do
+			if #queueFarm > 0 and not curFarmZone then
+				curFarmZone = table.remove(queueFarm, 1)
+			end
+		end
+	end)
+end
+
+local function BypassAntiTP()
+	local ids = {
+		["crate"] = nil,
+		["horse"] = nil,
+		["saddle"] = nil
+	}
+
+	ids["crate"] = FindClosestObject(hrp, objectModels:WaitForChild("crate")):GetAttribute("entity_server")
+	
+	for _, trash in pairs(objectModels:GetChildren()) do
+		if trash:GetAttribute("entity_server") ~= ids["crate"] then
+			trash:Destroy()
+		end
+	end	
+
+	actionable:FireServer(ids["crate"])
+	task.wait(0.7)
+
+	if not workspace:FindFirstChild("Model_Horse") then
+		ids["saddle"] = FindClosestObject(hrp, objectModels:WaitForChild("saddle")):GetAttribute("entity_server")
+		ids["horse"] = FindClosestObject(hrp, runtimeEntities:WaitForChild("Model_Horse")):GetAttribute("entity_server")
+	
+		while task.wait(1.5) do
+			if workspace:FindFirstChild("Model_Horse") then
+				break
+			end
+			store:FireServer(ids["saddle"])
+			task.wait(0.2)
+			store:FireServer(ids["horse"])
+			task.wait(0.2)
+			store:FireServer(ids["saddle"])
+			task.wait(0.2)
+			store:FireServer(ids["horse"])
+		end
+		
+
+	else
+		ids["horse"] = FindClosestObject(hrp, workspace:WaitForChild("Model_Horse")):GetAttribute("entity_server")
+	end
+
+	local seat = FindClosestObject(hrp, workspace:WaitForChild("Model_Horse")):WaitForChild("VehicleSeat")
+	while task.wait(0.2) do
+		if humanoid.sit then
+			break
+		end
+		hrp.CFrame = seat.CFrame
+	end
+
+	store:FireServer(ids["horse"])
+	task.wait(0.5)
+	Farming()
+end
+
+local speed = 1/10
+local sX = 0
+local sY = 50
+local sZ = 120
+
+function Farming()
+	workspace.Gravity = 0
+	runtimeEntities:Destroy()
+	
+	for _, obj in pairs(character:GetDescendants()) do
+		if obj:IsA("BasePart") then
+			obj.CanCollide = false
+		end
+	end
+
+	towns.ChildAdded:Connect(function(object)
+		table.insert(queueFarm, object)
+	end)
+
+	workspace.ChildAdded:Connect(function(object)
+		if object.Name == "VampireCastle" or object.Name == "FortConstitution" then
+			table.insert(queueFarm, object)
+		end
+	end)
+	
+	AutoQueue()
+	StartTimer()
+	spawn(function()
+		while task.wait(speed) do
+			-- Сканирует местность
+			if curFarmZone == nil then
+				if timer >= 4 then
+					timer = 0
+					local rail = FindRailCFrame() or hrp.CFrame
+					hrp.CFrame = CFrame.new(rail.Position.X, sY, rail.Position.Z + -sZ)
+				else
+					hrp.CFrame = CFrame.new(hrp.CFrame.Position.X, sY, hrp.CFrame.Position.Z + -sZ)
+				end
+			else
+				if curFarmZone.Parent == towns then
+					hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + 15, sY, curFarmZone.WorldPivot.Position.Z )
+					task.wait(2)
+					for _, house in pairs(curFarmZone:WaitForChild("Buildings"):GetChildren()) do
+						if house.Name == "Bank" or house.Name == "BankDestroyed" then
+							hrp.CFrame = CFrame.new(house.WorldPivot.Position.X, sY, house.WorldPivot.Position.Z)
+							task.wait(2)
+							GetBonds()
+						end
+					end
+					curFarmZone:Destroy()
+					curFarmZone = nil
+				else
+					if curFarmZone.Name == "VampireCastle" then
+						local mainFloor = workspace:FindFirstChild("VampireCastle").House.MainFloor.CFrame
+						hrp.CFrame = CFrame.new(mainFloor.Position.X, sY, mainFloor.Position.Z)
+						task.wait(2)
+						GetBonds()
+						task.wait(2)
+						Rejoin()
+
+					elseif curFarmZone.Name == "FortConstitution" then
+						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + 20, sY, curFarmZone.WorldPivot.Position.Z)
+						task.wait(2)
+						GetBonds()
+						-- Колхоз
+						hrp.CFrame = CFrame.new(curFarmZone.WorldPivot.Position.X + -20, sY, curFarmZone.WorldPivot.Position.Z)
+						task.wait(2)
+						GetBonds()
+					end
+					curFarmZone:Destroy()
+					curFarmZone = nil
+				end
+			end
+		end
+	end)
+end
+
+task.wait(0.2)
+BypassAntiTP()
+
+
+
+
+
+
+
+
