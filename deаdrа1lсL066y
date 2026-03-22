@@ -23,7 +23,7 @@ menu:GetPropertyChangedSignal("Position"):Connect(function()
   	  }
 	}
 	remote:FireServer(unpack(args))
-	dataCFG["Toggle"] = true
+	dataCFG["isFarm"] = true
 end)
 
 local function Scan()
