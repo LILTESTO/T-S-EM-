@@ -13,6 +13,7 @@ local remote = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe")
 local menu = localPlayer.PlayerGui:WaitForChild("PartyCreation"):WaitForChild("Frame")
 local isFound = false
 
+local dataName = "DeadRailsCFG.json"
 local function UpdateCFG(data)
 	if not data then return end
 	
