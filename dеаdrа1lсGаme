@@ -151,7 +151,7 @@ local function BypassAntiTP()
 	end	
 
 	actionable:FireServer(ids["crate"])
-	task.wait(1.5)
+	task.wait(2.5)
 
 	if not workspace:FindFirstChild("Model_Horse") then
 		ids["saddle"] = FindClosestObject(hrp, objectModels:WaitForChild("saddle")):GetAttribute("entity_server")
