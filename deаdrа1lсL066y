@@ -60,7 +60,7 @@ local function JoinServer()
 		end
 end
 
-menu:GetPropertyChangedSignal("Position"):Connect(JoinServer())
+menu:GetPropertyChangedSignal("Position"):Connect(JoinServer)
 
 local function Scan()
 	if isFound then return end
