@@ -47,7 +47,7 @@ local function Scan()
 		if status.Text == "Waiting for players..." then
 			hrp.CFrame = lobby.Hitbox.CFrame
 			task.wait(0.5)
-			hrp.CFrame = CFrame.new(hitbox.CFrame.Position.X, hitbox.CFrame.Position.Y + 10, hitbox.Position.Z)
+			hrp.CFrame = CFrame.new(hitbox.CFrame.Position.X, hitbox.CFrame.Position.Y + 20, hitbox.Position.Z)
 			
 		end
 		task.wait(0.5)
