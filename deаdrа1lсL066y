@@ -40,27 +40,25 @@ local function UpdateCFG(data)
 	return writefile(dataName, HttpService:JSONEncode(data))
 end
 
-local function JoinServer()
-		local args = {
-		    [1] = {
-	 	       ["isPrivate"] = true,
-	 	       ["maxMembers"] = 1,
-	   	     ["trainId"] = "default",
-	   	     ["gameMode"] = "BiteSized"
-	  	  }
-		}
-		createparty:FireServer(unpack(args))
-		task.wait(1)
-		if exit.Enabled then
-			isFound = true
-			dataCFG["isFarm"] = true
-			UpdateCFG(dataCFG)
-		else
-			Scan()
-		end
-end
-
-menu:GetPropertyChangedSignal("Position"):Connect(JoinServer)
+menu:GetPropertyChangedSignal("Position"):Connect(function() 
+	local args = {
+		  [1] = {
+	 	 ["isPrivate"] = true,
+	 	 ["maxMembers"] = 1,
+	   	 ["trainId"] = "default",
+	   	 ["gameMode"] = "BiteSized"
+	    }
+	}
+	createparty:FireServer(unpack(args))
+	task.wait(1)
+	if exit.Enabled then
+		isFound = true
+		dataCFG["isFarm"] = true
+		UpdateCFG(dataCFG)
+	else
+		Scan()
+	end
+end)
 
 local function Scan()
 	if isFound then return end
