@@ -1,4 +1,5 @@
 local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -12,6 +13,20 @@ local remote = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe")
 
 local menu = localPlayer.PlayerGui:WaitForChild("PartyCreation"):WaitForChild("Frame")
 local isFound = false
+
+local function Timeout(time)
+	spawn(function()
+		while task.wait(1) do
+			time -= 1
+			if time <= 0 then
+				pcall(function()
+					local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
+					task.wait(5)
+				end)
+			end
+		end
+	end)
+end
 
 local dataName = "DeadRailsCFG.json"
 local function UpdateCFG(data)
@@ -54,4 +69,5 @@ local function Scan()
 	end
 	Scan()
 end
+Timeout(40)
 Scan()
