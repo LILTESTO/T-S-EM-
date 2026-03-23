@@ -9,9 +9,12 @@ local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
 
 local partyZones = workspace:WaitForChild("PartyZones")
-local remote = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe"):WaitForChild("Network"):WaitForChild("RemoteEvent"):WaitForChild("CreateParty")
+local remotes = replicatedStorage:WaitForChild("Shared"):WaitForChild("Universe"):WaitForChild("Network"):WaitForChild("RemoteEvent")
+local createparty = remotes:WaitForChild("CreateParty")
+local exitparty = remotes:WaitForChild("ExitParty")
 
 local menu = localPlayer.PlayerGui:WaitForChild("PartyCreation"):WaitForChild("Frame")
+local exit = localPlayer.PlayerGui:WaitForChild("ExitParty")
 local isFound = false
 
 local function Timeout(time)
@@ -19,6 +22,7 @@ local function Timeout(time)
 		while task.wait(1) do
 			time -= 1
 			if time <= 0 then
+				dataCFG["isFarm"] = false
 				pcall(function()
 					local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
 					task.wait(5)
@@ -36,23 +40,30 @@ local function UpdateCFG(data)
 	return writefile(dataName, HttpService:JSONEncode(data))
 end
 
-menu:GetPropertyChangedSignal("Position"):Connect(function()
-	isFound = true
+local function JoinServer()
+		local args = {
+		    [1] = {
+	 	       ["isPrivate"] = true,
+	 	       ["maxMembers"] = 1,
+	   	     ["trainId"] = "default",
+	   	     ["gameMode"] = "BiteSized"
+	  	  }
+		}
+		createparty:FireServer(unpack(args))
+		task.wait(1)
+		if exit.Enabled then
+			isFound = true
+			dataCFG["isFarm"] = true
+			UpdateCFG(dataCFG)
+		else
+			Scan()
+		end
+end
 
-	local args = {
-	    [1] = {
- 	       ["isPrivate"] = true,
- 	       ["maxMembers"] = 1,
-   	     ["trainId"] = "default",
-   	     ["gameMode"] = "BiteSized"
-  	  }
-	}
-	remote:FireServer(unpack(args))
-	dataCFG["isFarm"] = true
-	UpdateCFG(dataCFG)
-end)
+menu:GetPropertyChangedSignal("Position"):Connect(JoinServer())
 
 local function Scan()
+	if isFound then return end
 	for index, lobby in pairs(partyZones:GetChildren()) do
 		if isFound then break end
 
@@ -61,11 +72,11 @@ local function Scan()
 		
 		if status.Text == "Waiting for players..." then
 			hrp.CFrame = lobby.Hitbox.CFrame
-			task.wait(0.5)
-			hrp.CFrame = CFrame.new(hitbox.CFrame.Position.X, hitbox.CFrame.Position.Y + 20, hitbox.Position.Z)
+			task.wait(1)
+			hrp.CFrame = CFrame.new(hitbox.CFrame.Position.X, hitbox.CFrame.Position.Y + 30, hitbox.Position.Z)
 			
 		end
-		task.wait(0.5)
+		task.wait(1)
 	end
 	Scan()
 end
