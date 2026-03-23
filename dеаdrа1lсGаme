@@ -38,6 +38,7 @@ local function UpdateCFG(data)
 end
 
 local function FindClosestObject(a, b) -- object, object | character.hrp, objectModels.crate
+	print(`A: {a}, B: {b}`)
 	if not a or not b then return false end
 
 	local lastResult = nil
