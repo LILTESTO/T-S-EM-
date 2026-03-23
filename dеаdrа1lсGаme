@@ -96,7 +96,7 @@ local function Rejoin()
 	
 end
 
-local trueTimer
+local trueTimer = 0
 local function Timeout()
 	spawn(function()
 		while task.wait(1) do
@@ -151,7 +151,7 @@ local function BypassAntiTP()
 	end	
 
 	actionable:FireServer(ids["crate"])
-	task.wait(0.7)
+	task.wait(1.5)
 
 	if not workspace:FindFirstChild("Model_Horse") then
 		ids["saddle"] = FindClosestObject(hrp, objectModels:WaitForChild("saddle")):GetAttribute("entity_server")
