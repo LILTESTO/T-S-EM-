@@ -19,7 +19,7 @@ local towns = workspace:WaitForChild("Towns")
 
 local timer = 0
 
-game:GetService("CoreGui").RobloxGui["CoreScripts/NetworkPause"]:Destroy()
+--game:GetService("CoreGui").RobloxGui["CoreScripts/NetworkPause"]:Destroy()
 workspace:WaitForChild("Decor"):Destroy()
 workspace:WaitForChild("RuntimePuddles"):Destroy()
 workspace:WaitForChild("Ore"):Destroy()
@@ -101,7 +101,7 @@ local function Timeout()
 	spawn(function()
 		while task.wait(1) do
 			trueTimer += 1
-			if trueTimer == 90 then 
+			if trueTimer == 70 then 
 				Rejoin()
 			end
 		end
@@ -127,6 +127,13 @@ local function AutoQueue()
 		end
 	end)
 end
+
+-- В случае ошибки телепорта, скрипт сразу будет пытаться телепортировать игрока в лобби
+game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(object)
+	if object.Name == "ErrorPrompt" and object:FindFirstChild("MessageArea") and object.MessageArea:FindFirstChild("ErrorFrame") then
+		Rejoin()
+	end
+end)
 
 local function BypassAntiTP()
 	local ids = {
@@ -259,6 +266,7 @@ function Farming()
 end
 
 task.wait(3)
+Timeout()
 BypassAntiTP()
 
 
