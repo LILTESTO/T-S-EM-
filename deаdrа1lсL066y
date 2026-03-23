@@ -23,6 +23,7 @@ local function Timeout(time)
 			time -= 1
 			if time <= 0 then
 				dataCFG["isFarm"] = false
+				UpdateCFG(dataCFG)
 				pcall(function()
 					local sur, err = TeleportService:Teleport(116495829188952, LocalPlayer)
 					task.wait(5)
