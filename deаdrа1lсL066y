@@ -48,8 +48,7 @@ local function Scan()
 			
 		end
 		task.wait(0.5)
-		Scan()
 	end
-	
+	Scan()
 end
 Scan()
