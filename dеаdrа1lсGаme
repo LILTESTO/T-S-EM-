@@ -101,7 +101,7 @@ local function Timeout()
 	spawn(function()
 		while task.wait(1) do
 			trueTimer += 1
-			if trueTimer == 70 then 
+			if trueTimer >= 70 then 
 				Rejoin()
 			end
 		end
