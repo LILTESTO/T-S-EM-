@@ -29,6 +29,7 @@ end
 ----------------------------------------------------------------------------
 repeat task.wait(0.3) until dataCFG["Toggle"]
 ----------------------------------------------------------------------------
+setfpscap(6)
 if Currentgame == "Lobby" then
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/de%D0%B0dr%D0%B01l%D1%81L066y"))()
 elseif Currentgame == "Game" then
