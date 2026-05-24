@@ -150,7 +150,7 @@ end
 
 local function sell(x,y,z)
     local t = findTower(x,y,z)
-    if t then pcall(function() RF:InvokeServer("Troops","Se\108\108",{Troop=t}) end) end
+    if t then pcall(function() RF:InvokeServer("Troops","Sell",{Troop=t}) end) end
     task.wait(0.5)
 end
 
@@ -168,7 +168,7 @@ end
 
 local function sellAllTowers()
     for _,t in ipairs(towerFolder:GetChildren()) do
-        pcall(function() RF:InvokeServer("Troops","Se\108\108",{Troop=t}) end)
+        pcall(function() RF:InvokeServer("Troops","Sell",{Troop=t}) end)
         task.wait(0.1)
     end
 end
