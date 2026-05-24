@@ -67,7 +67,7 @@ local waveContainer = reactGame.Frame.wave.container
 local timeContainer = reactGame.Frame.waveTimer.container
 local gameOverGui = gui:WaitForChild("ReactGameNewRewards").Frame.gameOver
 
-print("TDSTDSTDS = 3")
+print("TDSTDSTDS = 2")
 
 local function getCash()
     local txt = (cashLabel.Text or ""):gsub("[^%d]","")
@@ -139,13 +139,14 @@ end
 
 
 local function place(x,y,z,name,cost)
-    print("TDSTDSTDS = PLACE!")
+    print("TDSTDSTDS = PLACE")
     waitForCash(cost)
     pcall(function() RF:InvokeServer("Troops","Pl\208\176ce",{Rotation=CFrame.new(),Position=Vector3.new(x,y,z)},name) end)
     task.wait(0.5)
 end
 
 local function upgrade(x,y,z,path,cost)
+    print("TDSTDSTDS = UPGRADE")
     waitForCash(cost)
     task.wait(0.2)
     local t = findTower(x,y,z)
@@ -154,24 +155,28 @@ local function upgrade(x,y,z,path,cost)
 end
 
 local function sell(x,y,z)
+    print("TDSTDSTDS = SELL")
     local t = findTower(x,y,z)
     if t then pcall(function() RF:InvokeServer("Troops","Se\108\108",{Troop=t}) end) end
     task.wait(0.5)
 end
 
 local function SetTower(x,y,z,val,name)
+    print("TDSTDSTDS = SETTOWER")
     local t = findTower(x,y,z)
     if t then pcall(function() RF:InvokeServer("Troops","Option","Set",{Value=val,Name=name,Troop=t}) end) end
     task.wait(0.5)
 end
 
 local function SetTarget(x,y,z,mode)
+    print("TDSTDSTDS = SETTARGET")
     local t = findTower(x,y,z)
     if t then pcall(function() RF:InvokeServer("Troops","Target","Set",{Target=mode or "Random",Troop=t}) end) end
     task.wait(0.5)
 end
 
 local function sellAllTowers()
+    print("TDSTDSTDS = SELLALLTOWERS")
     for _,t in ipairs(towerFolder:GetChildren()) do
         pcall(function() RF:InvokeServer("Troops","Se\108\108",{Troop=t}) end)
         task.wait(0.1)
@@ -180,6 +185,7 @@ end
 
 
 local function ability(x,y,z,name,wt)
+    print("TDSTDSTDS = ABILITY")
     local execute = function()
         local t = findTower(x,y,z)
         if t then
