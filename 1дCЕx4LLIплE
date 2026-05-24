@@ -142,10 +142,10 @@ end
 
 local function upgrade(x,y,z,path,cost)
     waitForCash(cost)
-    task.wait(0.2)
+    task.wait(0.3)
     local t = findTower(x,y,z)
     if t then pcall(function() RF:InvokeServer("Troops","Upgrade","Set",{Troop=t,Path=path}) end) end
-    task.wait(0.4)
+    task.wait(0.5)
 end
 
 local function sell(x,y,z)
