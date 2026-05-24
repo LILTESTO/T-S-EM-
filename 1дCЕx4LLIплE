@@ -20,7 +20,7 @@ local vu = game:GetService("VirtualUser")
 
 player.Idled:Connect(function()
     vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-    task.wait(1)
+    task.wait(0.1)
     vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
 end)
 
@@ -43,7 +43,7 @@ end
 
 
 task.spawn(function()
-    repeat task.wait() until game:IsLoaded()
+    repeat task.wait(0.1) until game:IsLoaded()
     if workspace:FindFirstChild("Elevators") then
         RF:InvokeServer("Multiplayer","v2:start",{count=1, mode="survival", difficulty=config.difficulty})
     else
@@ -145,13 +145,13 @@ local function upgrade(x,y,z,path,cost)
     task.wait(0.2)
     local t = findTower(x,y,z)
     if t then pcall(function() RF:InvokeServer("Troops","Upgrade","Set",{Troop=t,Path=path}) end) end
-    task.wait(0.5)
+    task.wait(0.4)
 end
 
 local function sell(x,y,z)
     local t = findTower(x,y,z)
     if t then pcall(function() RF:InvokeServer("Troops","Sell",{Troop=t}) end) end
-    task.wait(0.5)
+    task.wait(0.4)
 end
 
 local function SetTower(x,y,z,val,name)
@@ -249,7 +249,7 @@ local function setupWaveListener()
 end
 
 if not setupWaveListener() then
-    waveContainer.ChildAdded:Connect(function() task.wait(0.5) setupWaveListener() end)
+    waveContainer.ChildAdded:Connect(function() task.wait(0.4) setupWaveListener() end)
 end
 
 
@@ -268,7 +268,7 @@ end)
 
 if config.autoskip then
     task.spawn(function()
-        while task.wait(1) do pcall(function() RF:InvokeServer("Voting","Skip") end) end
+        while task.wait(0.3) do pcall(function() RF:InvokeServer("Voting","Skip") end) end
     end)
 end
 
