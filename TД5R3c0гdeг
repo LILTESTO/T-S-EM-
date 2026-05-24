@@ -65,19 +65,11 @@ TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
 Instance.new("UICorner",TitleBar).CornerRadius = UDim.new(0,8)
 
-local IconLabel = Instance.new("ImageLabel")
-IconLabel.Size = UDim2.new(0,24,0,24)
-IconLabel.Position = UDim2.new(0,6,0,5.5)
-IconLabel.BackgroundTransparency = 1
-IconLabel.Image = "rbxassetid://131892820187785"
-IconLabel.ScaleType = Enum.ScaleType.Fit
-IconLabel.Parent = TitleBar
-
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1,-100,1,0)
 TitleText.Position = UDim2.new(0,35,0,0)
 TitleText.BackgroundTransparency = 1
-TitleText.Text = "EggHub Logger"
+TitleText.Text = "TDSLogger"
 TitleText.TextColor3 = Color3.new(1,1,1)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 14
@@ -131,7 +123,7 @@ CopyButton.BackgroundColor3 = Color3.fromRGB(60,150,255)
 CopyButton.TextColor3 = Color3.new(1,1,1)
 CopyButton.Font = Enum.Font.GothamBold
 CopyButton.TextSize = 12
-CopyButton.Text = "📋  Copy Logs"
+CopyButton.Text = "Copy"
 CopyButton.Parent = BottomBar
 Instance.new("UICorner",CopyButton).CornerRadius = UDim.new(0,6)
 
@@ -142,7 +134,7 @@ ClearButton.BackgroundColor3 = Color3.fromRGB(200,60,60)
 ClearButton.TextColor3 = Color3.new(1,1,1)
 ClearButton.Font = Enum.Font.GothamBold
 ClearButton.TextSize = 12
-ClearButton.Text = "🗑️"
+ClearButton.Text = "Clear"
 ClearButton.Parent = BottomBar
 Instance.new("UICorner",ClearButton).CornerRadius = UDim.new(0,6)
 
@@ -326,4 +318,4 @@ end)
 
 setreadonly(mt,true)
 
-addLog("✓ Call me daddy for more script", Color3.fromRGB(100,255,100))
+addLog("Hello, world!", Color3.fromRGB(100,255,100))
