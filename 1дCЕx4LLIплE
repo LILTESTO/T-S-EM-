@@ -145,7 +145,7 @@ end
 local function place(x,y,z,name,cost)
     print("TDSTDSTDS = PLACE")
     waitForCash(cost)
-    pcall(function() RF:InvokeServer("Troops","Pl\208\176ce",{Rotation=CFrame.new(),Position=Vector3.new(x,y,z)},name) end)
+    pcall(function() RF:InvokeServer("Troops", "Place", {"Rotation" = CFrame.new(), "Position" = Vector3.new(x, y, z)}, name) end)
     task.wait(0.5)
 end
 
