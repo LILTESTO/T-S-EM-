@@ -8,7 +8,7 @@ local config = {
     difficulty = TDSMacro.Difficulty,
     map = TDSMacro.Map,
     replay = TDSMacro.Replay,
-    macroURL = TDSMacro.MacroUrl
+    macroURL = TDSMacro.macroURL
 }
 
 local RS = game:GetService("ReplicatedStorage")
