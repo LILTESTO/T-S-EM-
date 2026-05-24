@@ -6,7 +6,7 @@ local config = {
     autoCommander = TDSMacro.autoCommander,
     difficulty = TDSMacro.Difficulty,
     map = TDSMacro.Map,
-    replay = TDSMacro.Replay,
+    replay = TDSMacro.replay,
     macroURL = TDSMacro.macroURL
 }
 
