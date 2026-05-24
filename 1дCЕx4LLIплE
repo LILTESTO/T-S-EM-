@@ -1,3 +1,4 @@
+print("TDSTDSTDS = 1")
 local TDSMacro = getgenv().TDSMacro or {}
 local config = {
     autoskip = TDSMacro.autoskip,
@@ -18,7 +19,7 @@ local RF = RS:WaitForChild("RemoteFunction")
 local RE = RS:WaitForChild("RemoteEvent")
 local vu = game:GetService("VirtualUser")
 
-
+print("TDSTDSTDS = 2")
 player.Idled:Connect(function()
     vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
     task.wait(1)
@@ -66,6 +67,7 @@ local waveContainer = reactGame.Frame.wave.container
 local timeContainer = reactGame.Frame.waveTimer.container
 local gameOverGui = gui:WaitForChild("ReactGameNewRewards").Frame.gameOver
 
+print("TDSTDSTDS = 3")
 
 local function getCash()
     local txt = (cashLabel.Text or ""):gsub("[^%d]","")
@@ -137,6 +139,7 @@ end
 
 
 local function place(x,y,z,name,cost)
+    print("TDSTDSTDS = PLACE!")
     waitForCash(cost)
     pcall(function() RF:InvokeServer("Troops","Pl\208\176ce",{Rotation=CFrame.new(),Position=Vector3.new(x,y,z)},name) end)
     task.wait(0.5)
