@@ -29,6 +29,7 @@ end)
 
 local skipFlag = false
 local function skipVoting()
+    print("TDSTDSTDS = skipVoting")
     task.spawn(function()
         while skipFlag do
             pcall(function() RF:InvokeServer("Voting","Skip") end)
@@ -38,6 +39,7 @@ local function skipVoting()
 end
 
 local function firstSkip()
+    print("TDSTDSTDS = first!")
     skipFlag = true
     skipVoting()
     task.delay(5,function() skipFlag=false end)
@@ -91,6 +93,7 @@ local function getTimeSec()
 end
 
 local function findTower(x,y,z)
+    print("TDSTDSTDS = findtower")
     local pos = Vector3.new(x,y,z)
     for _,t in ipairs(towerFolder:GetChildren()) do
         if t:IsA("Model") and t.PrimaryPart and (t.PrimaryPart.Position-pos).Magnitude <= 1 then
@@ -100,6 +103,7 @@ local function findTower(x,y,z)
 end
 
 local function waitForTower(x,y,z,timeout)
+    print("TDSTDSTDS = waittower")
     timeout = timeout or 10
     local start = tick()
     while tick()-start < timeout do
@@ -250,8 +254,10 @@ local function setupWaveListener()
                 print("TDSTDSTDS = wave2")
                 local w=getWave()
                 if w==1 and not macroLoaded and config.macroURL then
+                    print("TDSTDSTDS = wave4")
                     macroLoaded=true
                     pcall(function() loadstring(game:HttpGet(config.macroURL))() end)
+                    print("TDSTDSTDS = wave5")
                 end
                 if config.SellAllTower and config.AtWave>0 and w==config.AtWave then
                     sellAllTowers()
