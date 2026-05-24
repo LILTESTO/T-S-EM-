@@ -242,9 +242,12 @@ end
 
 local macroLoaded=false
 local function setupWaveListener()
+    print("TDSTDSTDS = setupwavelistener")
     for _,l in ipairs(waveContainer:GetDescendants()) do
+        print("TDSTDSTDS = wave1")
         if l:IsA("TextLabel") then
             l:GetPropertyChangedSignal("Text"):Connect(function()
+                print("TDSTDSTDS = wave2")
                 local w=getWave()
                 if w==1 and not macroLoaded and config.macroURL then
                     macroLoaded=true
@@ -253,6 +256,7 @@ local function setupWaveListener()
                 if config.SellAllTower and config.AtWave>0 and w==config.AtWave then
                     sellAllTowers()
                 end
+                print("TDSTDSTDS = wave3")
             end)
             return true
         end
@@ -269,6 +273,7 @@ gameOverGui:GetPropertyChangedSignal("Visible"):Connect(function()
         macroLoaded=false
         task.wait(config.replay and 2 or 3)
         if config.replay then firstSkip() else TS:Teleport(game.PlaceId,player) end
+        print("TDSTDSTDS = ahahaha!")
     end
 end)
 
