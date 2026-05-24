@@ -257,11 +257,12 @@ gameOverGui:GetPropertyChangedSignal("Visible"):Connect(function()
     if gameOverGui.Visible then
         macroLoaded=false
         task.wait(config.replay and 2 or 3)
-        if config.replay then
-            firstSkip()
-        else
-            TS:Teleport(game.PlaceId,player)
-        end
+        print(`config.replay: {config.replay}`)
+        --if config.replay then
+        --    firstSkip()
+        --else
+        --    TS:Teleport(game.PlaceId,player)
+        --end
     end
 end)
 
