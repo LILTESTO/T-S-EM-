@@ -253,6 +253,7 @@ local function setupWaveListener()
             l:GetPropertyChangedSignal("Text"):Connect(function()
                 print("TDSTDSTDS = wave2")
                 local w=getWave()
+                print(`w: {w}\nloaded: {macroLoaded}\nurl: {config.macroURL}`)
                 if w==1 and not macroLoaded and config.macroURL then
                     print("TDSTDSTDS = wave4")
                     macroLoaded=true
