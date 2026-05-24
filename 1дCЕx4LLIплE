@@ -296,3 +296,4 @@ getgenv().ability=ability
 getgenv().Ability1=Ability1
 getgenv().Ability2=Ability2
 getgenv().Ability3=Ability3
+print("TDS LOADED!!!")
