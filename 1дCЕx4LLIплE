@@ -64,6 +64,80 @@ local cashLabel = gui:WaitForChild("ReactUniversalHotbar").Frame.values.cash.amo
 local waveContainer = reactGame.Frame.wave.container
 local timeContainer = reactGame.Frame.waveTimer.container
 local gameOverGui = gui:WaitForChild("ReactGameNewRewards").Frame.gameOver
+local rewardList = gameOverGui.RewardsScreen.RewardsSection
+
+local oldCoin = player.Coins.Value
+local newCoin = 0
+
+local oldGem = player.Gems.Value
+local newGem = 0
+
+local function newBalanceUI()
+	local TDS = Instance.new("ScreenGui")
+	TDS.Parent = game:GetService("CoreGui")
+	TDS.Enabled = true
+	TDS.SafeAreaCompatibility = Enum.SafeAreaCompatibility.FullscreenExtension
+	TDS.Name = "TDS"
+	TDS.DisplayOrder = 0
+	TDS.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	TDS.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
+	TDS.ClipToDeviceSafeArea = true
+	
+	local Count = Instance.new("TextLabel")
+	Count.Parent = TDS
+	Count.LayoutOrder = 0
+	Count.TextDirection = Enum.TextDirection.Auto
+	Count.Active = false
+	Count.Interactable = true
+	Count.TextStrokeTransparency = 0
+	Count.TextTruncate = Enum.TextTruncate.None
+	Count.SizeConstraint = Enum.SizeConstraint.RelativeXY
+	Count.ZIndex = 1
+	Count.BorderSizePixel = 0
+	Count.RichText = false
+	Count.SelectionOrder = 0
+	Count.TextYAlignment = Enum.TextYAlignment.Center
+	Count.TextScaled = true
+	Count.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Count.BorderMode = Enum.BorderMode.Outline
+	Count.Selectable = false
+	Count.AnchorPoint = Vector2.new(0.5, 0.5)
+	Count.BorderColor = BrickColor.new("Really black")
+	Count.Visible = true
+	Count.TextXAlignment = Enum.TextXAlignment.Left
+	Count.AutomaticSize = Enum.AutomaticSize.None
+	Count.Size = UDim2.new(0.839, 0, 0.29, 0)
+	Count.TextWrapped = true
+	Count.TextTransparency = 0
+	Count.ClipsDescendants = false
+	Count.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Count.Text = `C: {oldCoin}\nG: {oldGem}`
+	Count.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+	Count.LineHeight = 1
+	Count.Rotation = 0
+	Count.Font = Enum.Font.SourceSans
+	Count.BackgroundTransparency = 1
+	Count.Position = UDim2.new(0.437, 0, 0.177, 0)
+	Count.TextSize = 14
+	Count.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Count.Name = "Count"
+	
+	return Count
+end
+local balanceUI = newBalanceUI()
+
+local function updateBalance()
+    for _, reward in pairs(rewardList:GetChildren()) do
+		if not reward:IsA("Frame") then continue end
+
+		local textLabel = reward.icon.icon.textLabel
+		local result = string.match(string.lower(textLabel.text), "coin") or string.match(string.lower(textLabel.text), "gem")
+
+        newCoin += if result == "coin" then tonumber(string.match(textLabel.text, "%d+")) else 0
+		newGem += if result == "gem" then tonumber(string.match(textLabel.text, "%d+")) else 0
+	end
+	balanceUI.Text = `C: {newCoin + oldCoin}\nG: {newGem + oldGem}`
+end
 
 local function getCash()
     local txt = (cashLabel.Text or ""):gsub("[^%d]","")
@@ -255,6 +329,7 @@ end
 
 gameOverGui:GetPropertyChangedSignal("Visible"):Connect(function()
     if gameOverGui.Visible then
+        updateBalance()
         macroLoaded=false
         task.wait(config.replay and 2 or 3)
         if config.replay then
