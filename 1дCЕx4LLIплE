@@ -64,7 +64,6 @@ local cashLabel = gui:WaitForChild("ReactUniversalHotbar").Frame.values.cash.amo
 local waveContainer = reactGame.Frame.wave.container
 local timeContainer = reactGame.Frame.waveTimer.container
 local gameOverGui = gui:WaitForChild("ReactGameNewRewards").Frame.gameOver
-local rewardList = gameOverGui.RewardsScreen.RewardsSection
 
 local oldCoin = player.Coins.Value
 local newCoin = 0
@@ -127,6 +126,7 @@ end
 local balanceUI = newBalanceUI()
 
 local function updateBalance()
+	local rewardList = gameOverGui.RewardsScreen.RewardsSection
     for _, reward in pairs(rewardList:GetChildren()) do
 		if not reward:IsA("Frame") then continue end
 
