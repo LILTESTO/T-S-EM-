@@ -1,0 +1,419 @@
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RF = ReplicatedStorage:WaitForChild("RemoteFunction")
+local RE = ReplicatedStorage:WaitForChild("RemoteEvent")
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local placeIds = {
+	[3260590327] = "Lobby", -- Lobby
+	[5591597781] = "Game" -- inGame
+	
+}
+
+local Currentgame = placeIds[game.PlaceId] or nil
+print(`[TDStrat]: Placeid: {game.PlaceId}\nCurrent: {Currentgame}`)
+if not Currentgame then warn("[TDStrat]: GAME NOT SUPPORTED!") return end
+---------------------------------------------------------------
+local dataName = "TDSCFG.json"
+
+if isfile(dataName) then
+	getgenv().dataCFG = HttpService:JSONDecode(readfile(dataName))
+else
+	getgenv().dataCFG = {
+		Farmer = LocalPlayer.Name,
+		FarmMode = "c", 	-- Какую валюту фармить  -> 	[c] - Золото | [g] - Гемы
+		Toggle = false, 	-- Режим работы -> 				[true] - Вкл. | [false] - Выкл.
+		isFarming = false,  -- Статус -> 					[true] - Фармит | [false] - Не фармит
+	}
+end
+
+-- Проверка на смену профиля и вышел ли игрок во время игры
+if LocalPlayer.Name ~= dataCFG["Farmer"] or dataCFG["isFarming"] and Currentgame == "Lobby" then
+	print(`[TDStrat]: Script is stopped!`)
+	if LocalPlayer.Name ~= dataCFG["Farmer"] then
+		print(`[TDStrat]: Farmer change to -> {LocalPlayer.Name}`)
+		dataCFG["Farmer"] = LocalPlayer.Name
+	end
+	dataCFG["Toggle"] = false
+	dataCFG["isFarming"] = false
+end
+
+print(`[TDStrat]: Waiting...`)
+----------------------------------------------------------------
+repeat task.wait(0.3) until dataCFG["Toggle"]
+----------------------------------------------------------------
+print(`[TDStrat]: Script is running!`)
+
+local Coins, Gems, Lvl = LocalPlayer:WaitForChild("Coins"), LocalPlayer:WaitForChild("Gems"), LocalPlayer:WaitForChild("Level")
+local refarm = false
+-- Обновление КФГ файла
+local function UpdateCFG(data)
+	if not data then return end
+	
+	dataCFG = data
+	print(`[TDStrat - UpdateCFG]: CFG is updated!`)
+	return writefile(dataName, HttpService:JSONEncode(data))
+end
+
+-- Телепорт в игру/лобби
+local function TpToGame(mode) -- coin | gem | lobby
+	print(`[TDStrat - TpToGame]: Teleporting to [{mode}]...`)
+	if mode == "coin" then
+		dataCFG["isFarming"] = true
+		UpdateCFG(dataCFG)
+		RF:InvokeServer("Multiplayer","v2:start",{count = 1, mode = "hardcore"})
+		
+	elseif mode == "gem" then
+		dataCFG["isFarming"] = true
+		UpdateCFG(dataCFG)
+		if Lvl.Value >= 70 then
+                    RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Frost", mode = "survival", count = 1})
+                else
+		    RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Molten", mode = "survival", count = 1})
+		end
+
+        elseif mode == "win" then
+		dataCFG["isFarming"] = true
+		UpdateCFG(dataCFG)
+		RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Easy", mode = "survival", count = 1})
+
+	elseif mode == "rejoin" then
+		dataCFG["isFarming"] = true
+		UpdateCFG(dataCFG)
+		game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("GameManager"):WaitForChild("RE:Rematch"):FireServer()
+		
+		
+	elseif mode == "lobby" then
+		setfpscap(5)
+		dataCFG["isFarming"] = false
+		UpdateCFG(dataCFG)
+		
+		while task.wait(2) do
+			warn(`[TDStrat - TpToGame]: Called lobby!`)
+			
+			--local placeId = 3260590327
+			--local site = HttpService:JSONDecode(game:HttpGet(`https://games.roblox.com/v1/games/{placeId}/servers/0?sortOrder=1&excludeFullGames=true&limit=100`))
+			----local jobId = nil
+			--local fpslimit = 45
+			
+			TeleportService:Teleport(3260590327, LocalPlayer)
+			
+			--for _, server in site.data do
+			--	if server.fps > fpslimit then
+			--		if server.maxPlayers > server.playing and server.playing >= 3 then
+			--			jobId = server.id
+			--			TeleportService:TeleportToPlaceInstance(placeId, jobId, LocalPlayer)
+			--			print(`[TDStrat - TpToGame]: Trying teleporting...`)
+			--		end
+			--	end
+			--end
+		end
+	end
+end
+
+-- В случае ошибки телепорта, скрипт сразу будет пытаться телепортировать игрока в лобби
+game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(object)
+	if object.Name == "ErrorPrompt" and object:FindFirstChild("MessageArea") and object.MessageArea:FindFirstChild("ErrorFrame") then
+		TpToGame("lobby")
+	end
+end)
+---------------------------------------------------------
+if Currentgame == "Lobby" then
+	if dataCFG["FarmMode"] == "c" then -- Pizza
+		TpToGame("coin")
+	elseif dataCFG["FarmMode"] == "g" then -- wrecked
+		TpToGame("gem")
+	elseif dataCFG["FarmMode"] == "w" then -- Dead AHead
+		TpToGame("win")
+	end
+end
+---------------------------------------------------------
+if Currentgame == "Game" then
+	local gameOver = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ReactGameNewRewards"):WaitForChild("Frame"):WaitForChild("gameOver")
+	
+	gameOver:GetPropertyChangedSignal("Visible"):Connect(function()
+		while task.wait(5) do
+			print(`[TDStrat]: Game ended!`)
+			if dataCFG["FarmMode"] == "w" then
+				TpToGame("rejoin")
+			end
+
+			if refarm then
+				TpToGame("lobby")
+			end
+		end
+	end)
+
+	-- Проверка на модФарм
+	if dataCFG["FarmMode"] == "c" then
+		local function StartFarm(count)
+			local attempt = count or 0
+
+			if attempt > 5 then
+				TpToGame("lobby")
+				return false
+			end
+
+			pcall(function()
+				local suc, err = loadstring(game:HttpGet("https://raw.githubusercontent.com/2xrW/67T/refs/heads/main/TDS-Coin-Farm"))()
+
+				task.wait(0.5)
+				-- Если скрипт не будет загружен, будут предприняты меры
+				if err then
+					attempt += 1
+					StartFarm(attempt)
+				end
+			end)
+		end
+		setfpscap(2)
+		task.wait(1)
+		StartFarm()
+
+	elseif dataCFG["FarmMode"] == "g" then
+		local targetMap
+
+                if Lvl.Value >= 70 then
+		    targetMap = "Winter Abyss"
+		else
+		    targetMap = "Dead Ahead"
+		end
+		
+		local VIPButton = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalSettings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown"):WaitForChild("Auto Skip"):WaitForChild("button")
+		local stands = workspace:WaitForChild("IntermissionLobby"):WaitForChild("Boards")	
+		-------------------------------------------------------------
+		-- Смотрит нал. VIP-статуса
+		local function CheckVIP()
+			if VIPButton.BackgroundTransparency == 1 then
+				print(`[TDStrat - CheckVIP]: Detected!`)
+				return true
+			end
+			print(`[TDStrat - CheckVIP]: Not detected.`)
+			return false
+		end
+		
+		-- Поиск нал. карты на стенде
+		local function CheckStand()
+			print(`[TDStrat - CheckStand]: Called!`)
+			for _, stand in pairs(stands:GetChildren()) do
+				if stand.Hitboxes.Bottom.MapDisplay.Title.Text == targetMap then
+					print(`[TDStrat - CheckStand]: Found!`)
+					return true
+				end
+			end
+
+			print(`[TDStrat - CheckStand]: Not found.`)
+			return false
+		end
+		
+		-- Запуск бота
+		local function StartFarm(count)
+			print(`[TDStrat - StartFarm]: Called!`)
+			local attempt = count or 0
+			
+			if attempt > 5 then
+				warn(`[TDStrat - CheckStand]: Attempt > 5 = error!`)
+				TpToGame("lobby")
+				return false
+			end
+			
+			pcall(function()
+				if Lvl.Value >= 70 then
+				    getgenv().TDSMacro = {
+    					autoskip = true,
+    					SellAllTower = true,
+    					AtWave = 14,
+   					 macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/1dСc01n5фR0с1",
+   					 replay = true,
+				    }
+		                else
+		    		    getgenv().TDSMacro = {
+    					autoskip = true,
+    					SellAllTower = true,
+    					AtWave = 16,
+    					macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/3oлdv2",
+    					replay = true,
+				     }
+				end
+
+				local suc, err = loadstring(game:HttpGet("https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/1дCЕx4LLIплE"))()
+
+
+				task.wait(0.5)
+				-- Если скрипт не будет загружен, будут предприняты меры
+				if err then
+					print(`[TDStrat - CheckStand]: Trying...`)
+					attempt += 1
+					StartFarm(attempt)
+				end
+			end)
+		end
+		
+		-- Голосование за быстрый запуск
+		local function VoteReady()
+			print(`[TDStrat - VoteReady]: Called!`)
+			RE:FireServer("LobbyVoting", "Ready")
+		end
+		
+		-- Выбор карты (REWRITE)
+		-- Оптимизировать переходы в меню игры. Возможно перейти с исскуственного телепорта на кнопку (через RF).
+		-- Пересмотреть всю логику в здравом уме.
+		local function VoteMap(isVeto)
+			print(`[TDStrat - VoteMap]: Called!`)
+			-- Выбор карты при наличии VIP-статуса
+			if CheckVIP() then
+				RF:InvokeServer("LobbyVoting", "Override", targetMap)
+				task.wait(1)
+			end
+			
+			-- Искусственная задержка
+			-- Тут по хорошему нужно написать проверку на детект изменения атрибутов стендов, но обойдёмся этим
+			if isVeto then
+				task.wait(3)
+			end
+			
+			-- Голосование за карту
+			if CheckStand() then
+				RE:FireServer("LobbyVoting", "Vote", targetMap, Vector3.new(0,0,0))
+				return true
+				
+			-- Переброс карт
+			elseif not isVeto then 
+				RE:FireServer("LobbyVoting", "Veto")
+				return VoteMap(true)
+			end
+			
+			if isVeto then
+				return false 
+			end
+		end
+		
+		-- INIT()
+		if VoteMap() then
+			setfpscap(1)
+			task.wait(1)
+			VoteReady()
+			StartFarm()
+		else
+			TpToGame("lobby")
+		end
+
+	elseif dataCFG["FarmMode"] == "w" then
+		local targetMap
+		targetMap = "Dead Ahead"
+		
+		local VIPButton = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalSettings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown"):WaitForChild("Auto Skip"):WaitForChild("button")
+		local stands = workspace:WaitForChild("IntermissionLobby"):WaitForChild("Boards")	
+		-------------------------------------------------------------
+		-- Смотрит нал. VIP-статуса
+		local function CheckVIP()
+			if VIPButton.BackgroundTransparency == 1 then
+				print(`[TDStrat - CheckVIP]: Detected!`)
+				return true
+			end
+			print(`[TDStrat - CheckVIP]: Not detected.`)
+			return false
+		end
+		
+		-- Поиск нал. карты на стенде
+		local function CheckStand()
+			print(`[TDStrat - CheckStand]: Called!`)
+			for _, stand in pairs(stands:GetChildren()) do
+				if stand.Hitboxes.Bottom.MapDisplay.Title.Text == targetMap then
+					print(`[TDStrat - CheckStand]: Found!`)
+					return true
+				end
+			end
+
+			print(`[TDStrat - CheckStand]: Not found.`)
+			return false
+		end
+		
+		-- Запуск бота
+		local function StartFarm(count)
+			print(`[TDStrat - StartFarm]: Called!`)
+			local attempt = count or 0
+			
+			if attempt > 5 then
+				warn(`[TDStrat - CheckStand]: Attempt > 5 = error!`)
+				TpToGame("lobby")
+				return false
+			end
+			
+			pcall(function()
+		    		    getgenv().TDSMacro = {
+    					autoskip = true,
+    					SellAllTower = true,
+    					macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/l3i%D0%BDlv",
+    					replay = true,
+				     }
+
+				local suc, err = loadstring(game:HttpGet("https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/1дCЕx4LLIплE"))()
+
+
+				task.wait(0.5)
+				-- Если скрипт не будет загружен, будут предприняты меры
+				if err then
+					print(`[TDStrat - CheckStand]: Trying...`)
+					attempt += 1
+					StartFarm(attempt)
+				end
+			end)
+		end
+		
+		-- Голосование за быстрый запуск
+		local function VoteReady()
+			print(`[TDStrat - VoteReady]: Called!`)
+			RE:FireServer("LobbyVoting", "Ready")
+		end
+		
+		-- Выбор карты (REWRITE)
+		-- Оптимизировать переходы в меню игры. Возможно перейти с исскуственного телепорта на кнопку (через RF).
+		-- Пересмотреть всю логику в здравом уме.
+		local function VoteMap(isVeto)
+			print(`[TDStrat - VoteMap]: Called!`)
+			-- Выбор карты при наличии VIP-статуса
+			if CheckVIP() then
+				RF:InvokeServer("LobbyVoting", "Override", targetMap)
+				task.wait(1)
+			end
+			
+			-- Искусственная задержка
+			-- Тут по хорошему нужно написать проверку на детект изменения атрибутов стендов, но обойдёмся этим
+			if isVeto then
+				task.wait(3)
+			end
+			
+			-- Голосование за карту
+			if CheckStand() then
+				RE:FireServer("LobbyVoting", "Vote", targetMap, Vector3.new(0,0,0))
+				return true
+				
+			-- Переброс карт
+			elseif not isVeto then 
+				RE:FireServer("LobbyVoting", "Veto")
+				return VoteMap(true)
+			end
+			
+			if isVeto then
+				return false 
+			end
+		end
+		
+		-- INIT()
+		if VoteMap() then
+			setfpscap(3)
+			task.wait(1)
+			VoteReady()
+			StartFarm()
+		else
+			TpToGame("lobby")
+		end
+	end
+end
+---------------------------------------------------------
+
