@@ -71,7 +71,7 @@ local function TpToGame(mode) -- coin | gem | lobby
 	elseif mode == "gem" then
 		dataCFG["isFarming"] = true
 		UpdateCFG(dataCFG)
-		if Lvl.Value >= 70 then
+		if Lvl.Value >= 60 then
                     RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Frost", mode = "survival", count = 1})
                 else
 		    RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Molten", mode = "survival", count = 1})
@@ -177,8 +177,8 @@ if Currentgame == "Game" then
 	elseif dataCFG["FarmMode"] == "g" then
 		local targetMap
 
-                if Lvl.Value >= 70 then
-		    targetMap = "Winter Abyss"
+                if Lvl.Value >= 60 then
+		    targetMap = "Simplicity"
 		else
 		    targetMap = "Dead Ahead"
 		end
@@ -222,11 +222,11 @@ if Currentgame == "Game" then
 			end
 			
 			pcall(function()
-				if Lvl.Value >= 70 then
+				if Lvl.Value >= 60 then
 				    getgenv().TDSMacro = {
     					autoskip = true,
     					SellAllTower = true,
-    					AtWave = 14,
+    					AtWave = 25,
    					 macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/1dСc01n5фR0с1",
    					 replay = true,
 				    }
@@ -294,7 +294,7 @@ if Currentgame == "Game" then
 		
 		-- INIT()
 		if VoteMap() then
-			setfpscap(1)
+			setfpscap(3)
 			task.wait(1)
 			VoteReady()
 			StartFarm()
