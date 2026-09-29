@@ -302,9 +302,9 @@ if Currentgame == "Game" then
 			TpToGame("lobby")
 		end
 
-	elseif dataCFG["FarmMode"] == "w" then
+	elseif dataCFG["FarmMode"] == "w" then -- ПОМЕНЯТЬ ОБРАТНО НА ПОБЕДЫ
 		local targetMap
-		targetMap = "Dead Ahead"
+		targetMap = "Wrecked Battlefield" -- DeadAHead
 		
 		local VIPButton = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalSettings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown"):WaitForChild("Auto Skip"):WaitForChild("button")
 		local stands = workspace:WaitForChild("IntermissionLobby"):WaitForChild("Boards")	
@@ -348,7 +348,8 @@ if Currentgame == "Game" then
 		    		    getgenv().TDSMacro = {
     					autoskip = true,
     					SellAllTower = true,
-    					macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/l3i%D0%BDlv",
+						AtWave = 28,
+    					macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/1dsExPF4pM",
     					replay = true,
 				     }
 
