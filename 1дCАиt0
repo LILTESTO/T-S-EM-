@@ -80,7 +80,7 @@ local function TpToGame(mode) -- coin | gem | lobby
         elseif mode == "win" then
 		dataCFG["isFarming"] = true
 		UpdateCFG(dataCFG)
-		RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Easy", mode = "survival", count = 1})
+		RF:InvokeServer("Multiplayer","v2:start",{difficulty = "Fallen", mode = "survival", count = 1})
 
 	elseif mode == "rejoin" then
 		dataCFG["isFarming"] = true
