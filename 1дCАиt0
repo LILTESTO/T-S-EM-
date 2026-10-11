@@ -445,7 +445,7 @@ if Currentgame == "Game" then
 						if object:IsA("BasePart") then
 							snows[object] = object
 					    end
-					emd)
+					end)
 	
 					while task.wait(5) do
 						for _, snow in snows do
@@ -459,9 +459,11 @@ if Currentgame == "Game" then
 						end
 					end
 				end)
-
-				return true
 				
+				return true
+
+			
+
 			-- Переброс карт
 			elseif not isVeto then 
 				RE:FireServer("LobbyVoting", "Veto")
