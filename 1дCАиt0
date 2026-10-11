@@ -49,6 +49,10 @@ repeat task.wait(0.3) until dataCFG["Toggle"]
 ----------------------------------------------------------------
 print(`[TDStrat]: Script is running!`)
 
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+	v:Disable()
+end
+
 local Coins, Gems, Lvl = LocalPlayer:WaitForChild("Coins"), LocalPlayer:WaitForChild("Gems"), LocalPlayer:WaitForChild("Level")
 local refarm = false
 -- Обновление КФГ файла
