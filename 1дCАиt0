@@ -53,6 +53,34 @@ for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
 	v:Disable()
 end
 
+print = function(...) end
+warn = function(...) end
+info = function(...) end
+printidentity = function() end
+
+task.spawn(function()
+	local LogService = game:GetService("LogService")
+
+    pcall(function()
+        local LogService = game:GetService("LogService")
+        for _, connection in ipairs(getconnections(LogService.MessageOut)) do
+            connection:Disable()
+        end
+    end)
+
+    pcall(function()
+        local ScriptContext = game:GetService("ScriptContext")
+        for _, connection in ipairs(getconnections(ScriptContext.Error)) do
+            connection:Disable()
+        end
+    end)
+
+	task.wait(30)
+	pcall(function()
+        LogService:ClearOutput()
+    end)
+end)
+
 local Coins, Gems, Lvl = LocalPlayer:WaitForChild("Coins"), LocalPlayer:WaitForChild("Gems"), LocalPlayer:WaitForChild("Level")
 local refarm = false
 -- Обновление КФГ файла
