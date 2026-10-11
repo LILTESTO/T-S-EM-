@@ -435,9 +435,6 @@ if Currentgame == "Game" then
 					local Players = game:GetService("Players")
 					local LocalPlayer = Players.LocalPlayer
 	
-					local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-					local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-	
 					local pickups = workspace:WaitForChild("Pickups")
 					local snows = {}
 	
@@ -448,10 +445,13 @@ if Currentgame == "Game" then
 					end)
 	
 					while task.wait(5) do
-						for _, snow in snows do
+						for _, snow in pairs(snows) do
 							if not snow:IsA("BasePart") then
 					            continue
 					        end
+
+							local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+							local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
 	
 							if snow.CFrame.Y < 10 then
 					            HumanoidRootPart.CFrame = snow.CFrame + Vector3.new(0, 7, 0)
