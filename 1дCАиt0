@@ -431,23 +431,33 @@ if Currentgame == "Game" then
 			if CheckStand() then
 				RE:FireServer("LobbyVoting", "Vote", targetMap, Vector3.new(0,0,0))
 
-				spawn(function()
-				local Players = game:GetService("Players")
-				local LocalPlayer = Players.LocalPlayer
-				
-				while task.wait(5) do
-				    for _, Snow in pairs(workspace:WaitForChild("Pickups"):GetChildren()) do
-				        if not Snow:IsA("BasePart") then
-				            continue
-				        end
-				        if Snow.CFrame.Y < 10 then
-				            local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-				            local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-				            
-				            HumanoidRootPart.CFrame = Snow.CFrame + Vector3.new(0, 5, 0)
-				        end
-				    end
-				end
+				task.spawn(function()
+					local Players = game:GetService("Players")
+					local LocalPlayer = Players.LocalPlayer
+	
+					local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+					local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+	
+					local pickups = workspace:WaitForChild("Pickups")
+					local snows = {}
+	
+					pickups.ChildAdded:Connect(function(object)
+						if object:IsA("BasePart") then
+							snows[object] = object
+					    end
+					emd)
+	
+					while task.wait(5) do
+						for _, snow in snows do
+							if not snow:IsA("BasePart") then
+					            continue
+					        end
+	
+							if snow.CFrame.Y < 10 then
+					            HumanoidRootPart.CFrame = Snow.CFrame + Vector3.new(0, 7, 0)
+					        end
+						end
+					end
 				end)
 
 				return true
