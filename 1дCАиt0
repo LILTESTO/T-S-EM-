@@ -437,12 +437,24 @@ if Currentgame == "Game" then
 	
 					local pickups = workspace:WaitForChild("Pickups")
 					local snows = {}
-	
+
+					for _, snow in pairs(pickups:GetChildren()) do
+						if snow:IsA("BasePart") then
+							snows[snow] = snow
+						end
+					end
+
 					pickups.ChildAdded:Connect(function(object)
 						if object:IsA("BasePart") then
 							snows[object] = object
 					    end
 					end)
+
+					pickups.ChildRemoved:Connect(function(object) 
+						if snows[object] then
+							snows[object] = nil
+						end
+	 				end)
 	
 					while task.wait(5) do
 						for _, snow in pairs(snows) do
