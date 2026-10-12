@@ -467,6 +467,7 @@ if Currentgame == "Game" then
 	
 							if snow.CFrame.Y < 10 then
 					            HumanoidRootPart.CFrame = snow.CFrame + Vector3.new(0, 7, 0)
+								break
 					        end
 						end
 					end
