@@ -499,9 +499,9 @@ if Currentgame == "Game" then
 		end
 
 
-	elseif dataCFG["FarmMode"] == "w" then -- ПОМЕНЯТЬ ОБРАТНО НА ПОБЕДЫ
+	elseif dataCFG["FarmMode"] == "w" then
 		local targetMap
-		targetMap = "Wrecked Battlefield" -- DeadAHead
+		targetMap = "Dead Ahead"
 		
 		local VIPButton = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalSettings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown"):WaitForChild("Auto Skip"):WaitForChild("button")
 		local stands = workspace:WaitForChild("IntermissionLobby"):WaitForChild("Boards")	
@@ -545,8 +545,7 @@ if Currentgame == "Game" then
 		    		    getgenv().TDSMacro = {
     					autoskip = true,
     					SellAllTower = true,
-						AtWave = 28,
-    					macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/1dsExPF4pM",
+    					macroURL = "https://raw.githubusercontent.com/LILTESTO/T-S-EM-/refs/heads/main/l3i%D0%BDlv",
     					replay = true,
 				     }
 
@@ -589,6 +588,48 @@ if Currentgame == "Game" then
 			-- Голосование за карту
 			if CheckStand() then
 				RE:FireServer("LobbyVoting", "Vote", targetMap, Vector3.new(0,0,0))
+
+				task.spawn(function()
+					local Players = game:GetService("Players")
+					local LocalPlayer = Players.LocalPlayer
+	
+					local pickups = workspace:WaitForChild("Pickups")
+					local snows = {}
+
+					for _, snow in pairs(pickups:GetChildren()) do
+						if snow:IsA("BasePart") then
+							snows[snow] = snow
+						end
+					end
+
+					pickups.ChildAdded:Connect(function(object)
+						if object:IsA("BasePart") then
+							snows[object] = object
+					    end
+					end)
+
+					pickups.ChildRemoved:Connect(function(object) 
+						if snows[object] then
+							snows[object] = nil
+						end
+	 				end)
+	
+					while task.wait(5) do
+						for _, snow in pairs(snows) do
+							if not snow:IsA("BasePart") then
+					            continue
+					        end
+
+							local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+							local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+	
+							if snow.CFrame.Y < 10 then
+					            HumanoidRootPart.CFrame = snow.CFrame + Vector3.new(0, 7, 0)
+								break
+					        end
+						end
+					end
+				end)
 				return true
 				
 			-- Переброс карт
