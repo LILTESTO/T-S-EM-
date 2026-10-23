@@ -1,0 +1,125 @@
+repeat task.wait() until game:IsLoaded()
+
+-- // Проверка плейса
+local PLACE_IDS = {
+	[3260590327] = "Lobby",
+	[5591597781] = "Game",
+}
+
+local currentGame = PLACE_IDS[game.PlaceId]
+
+print(`\n[TDStrat]: PlaceId: {game.PlaceId}\nCurrent: {tostring(currentGame)}\n`)
+
+if not currentGame then
+	warn("[TDStrat]: GAME NOT SUPPORTED!")
+	return
+end
+------------------------------------------------------------------------------------
+-- // Переменные
+local HttpService = cloneref(game:GetService("HttpService"))
+local TeleportService = cloneref(game:GetService("TeleportService"))
+local MarketplaceService = cloneref(game:GetService("MarketplaceService"))
+local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+
+local RemoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
+local RemoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
+
+local Players = cloneref(game:GetService("Players"))
+local LocalPlayer = Players.LocalPlayer
+
+local Coins = LocalPlayer.Coins
+local Gems = LocalPlayer.Gems
+local EXP = LocalPlayer.Level
+
+-- // Конфигурация
+local CFG_NAME = "TDSCFG.json"
+local CFG_MAIN = (function() getgenv().TDStrat = {} return getgenv().TDStrat end)()
+
+-- // Проверка на нал. випки
+local function HasVIP()
+	local ID = 10518590
+	local hasPass = false
+
+	local suc, err = pcall(function()
+		hasPass = MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, ID)
+	end)
+
+	if suc then
+		return hasPass
+	end
+
+	-- // Альтернативный вариант
+	local VIPButton = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalSettings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown"):WaitForChild("Auto Skip"):WaitForChild("button")
+	return VIPButton.BackgroundTransparency == 1
+end
+
+local CFG_DEFAULT = {
+	Version = "V1.0",
+	Player = LocalPlayer.UserId,
+
+	oldCoins = Coins.Value,
+	oldGems = Gems.Value,
+	oldEXP = EXP.Level,
+
+	finalCoins = 0,
+	finalGems = 0,
+	finalEXP = 0,
+
+	VIP = 0,
+
+	FarmMode = "Default", -- [Default] - Обычный | [Wins] - Победа | [New] - Новые аккаунты 
+	Toggle = false,
+	isFarming = false,
+} 
+
+-- // Первоначальная настройка кфг
+local function loadOrCreateCFG()
+	if isfile(CFG_NAME) then
+		
+		local Check, GetConfig = pcall(function()
+			return HttpService:JSONDecode(readfile(CFG_NAME))
+		end)
+		
+		if Check then
+			CFG_MAIN = GetConfig
+			
+		else
+			CFG_MAIN = CFG_DEFAULT
+			WriteCFG({VIP = HasVIP()})
+		end
+		
+	else
+		CFG_MAIN = CFG_DEFAULT
+		WriteCFG({VIP = HasVIP()})
+	end
+	
+	WriteCFG(CFG_MAIN)
+end
+
+-- // Обновляет кфг
+function WriteCFG(data)
+	if not data then return end
+	
+	for i, value in data do
+		if CFG_DEFAULT[i] ~= nil then
+			CFG_MAIN[i] = value
+		end
+	end
+	
+	writefile(CFG_NAME, HttpService:JSONEncode(CFG_MAIN))
+end
+
+-- инициализация перед проверкой
+loadOrCreateConfig()
+
+
+-- // Проверка на другого пользователя
+if LocalPlayer.UserId ~= CFG_MAIN.Player or (CFG_MAIN.isFarming and currentGame == "Lobby") then
+	CFG_MAIN.Player = LocalPlayer.UserId
+	CFG_MAIN.Toggle = false
+	CFG_MAIN.isFarming = false
+end
+
+----------------------------------------------------------------
+repeat task.wait(0.3) until CFG_MAIN.Toggle
+----------------------------------------------------------------
